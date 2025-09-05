@@ -27,6 +27,7 @@ jobs:
                echo "${key}=${value}" >> $GITHUB_ENV
                echo "Set environment variable: ${key}=${value}"
              fi
+           export
            done
       - name: Execute Gauge
         run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
