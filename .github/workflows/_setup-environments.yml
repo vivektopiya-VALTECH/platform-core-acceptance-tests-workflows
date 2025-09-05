@@ -1,0 +1,36 @@
+name: Setup Environments Matrix
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Single environment to run (if empty, runs all environments)"
+        required: false
+        type: string
+      all_environments:
+        description: "JSON array of all environments"
+        required: false
+        type: string
+        default: '["wc2-live", "wc2-approval", "wc2-tuidemo", "odp-live", "odp-approval", "odp-tui-demo"]'
+    outputs:
+      environments:
+        description: "JSON array of environments to process"
+        value: ${{ jobs.setup.outputs.environments }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.set-environments.outputs.environments }}
+    steps:
+      - name: Set environments matrix
+        id: set-environments
+        run: |
+          if [ -z "${{ inputs.environment }}" ]; then
+            echo "environments=${{ inputs.all_environments }}" >> $GITHUB_OUTPUT
+            echo "Running for all environments: ${{ inputs.all_environments }}"
+          else
+            # Specific environment provided
+            echo "environments=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
+            echo "Running for specific environment: ${{ inputs.environment }}"
+          fi
