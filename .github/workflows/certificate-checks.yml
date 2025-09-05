@@ -17,10 +17,11 @@ jobs:
     steps:
       - id: set-envs
         run: |
+          DEFAULT_ENVS='["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]'
           if [ -n "${{ inputs.environment }}" ]; then
             echo "environments=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
           else
-            echo 'environments=["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]' >> $GITHUB_OUTPUT
+            echo "environments=$DEFAULT_ENVS" >> $GITHUB_OUTPUT
           fi
 
 
