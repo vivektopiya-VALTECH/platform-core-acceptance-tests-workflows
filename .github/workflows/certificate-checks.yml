@@ -16,6 +16,14 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
 
+  debug:
+    name: Debug matrix
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - run: |
+          echo ${{ needs.setup.outputs.environments }}
+
   execute-gauge:
     name: ${{ matrix.environment }}
     needs: setup
