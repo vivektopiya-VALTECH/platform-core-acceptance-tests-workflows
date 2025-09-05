@@ -102,8 +102,7 @@ jobs:
           matrix_json = json.dumps(matrix, separators=(',', ':'))
           
           # Team matrix
-          teams_matrix = {"include": teams}
-          teams_json = json.dumps(teams_matrix)
+          teams_json = json.dumps(teams)
           
           # Output to GitHub
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
@@ -125,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        team: ${{ needs.setup-regression.outputs.teams }}
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
     secrets: inherit
     with:
       displayName: "${{ matrix.team }}"
