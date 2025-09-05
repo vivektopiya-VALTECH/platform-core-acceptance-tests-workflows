@@ -15,5 +15,5 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Execute Gauge
-        run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}
+        run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
 
