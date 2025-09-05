@@ -118,7 +118,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJson(needs.setup.outputs.environments) }}
+        environment: ${{ fromJson(needs.setup-regression.outputs.matrix) }}
     secrets: inherit
     with:
       displayName: "${{ matrix.displayName }} - ${{ matrix.environment }}"
