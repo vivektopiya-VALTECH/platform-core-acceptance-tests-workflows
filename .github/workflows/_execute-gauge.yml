@@ -19,9 +19,6 @@ jobs:
         if: ${{ inputs.envVars != '' }}
         run: |
           # Parse comma-separated environment variables
-          echo Running on : 
-          echo $RUNNING_ON
-          echo $SUPER_SECRET
            IFS=',' read -ra env_pairs <<< "${{ inputs.envVars }}"
            for pair in "${env_pairs[@]}"; do
              if [[ $pair == *"="* ]]; then
@@ -30,7 +27,6 @@ jobs:
                echo "${key}=${value}" >> $GITHUB_ENV
                echo "Set environment variable: ${key}=${value}"
              fi
-           export
            done
       - name: Execute Gauge
         run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"

@@ -108,6 +108,7 @@ jobs:
           print(f"Generated matrix for {len(teams)} team(s): {', '.join(teams)}")
           print(f"Generated matrix for {len(environments)} environment(s): {', '.join(environments)}")
           print(f"Total matrix combinations: {len(matrix_entries)}")
+          print(f"Generated matrix: {matrix_json}")
           
           EOF
 
