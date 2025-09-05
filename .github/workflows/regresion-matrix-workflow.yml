@@ -133,3 +133,18 @@ jobs:
       gaugeSpecs: "specs/platform-core/service/"
       gaugeTags: ${{ matrix.gaugeTags }}
 
+  wc2-approval:
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "wc2-approval"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
