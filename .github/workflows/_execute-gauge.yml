@@ -1,0 +1,19 @@
+name: Execute Gauge
+on:
+  workflow_call:
+    inputs:
+      displayName: { required: true, type: string }
+      environment: { required: true, type: string }
+      gaugeSpecs: { required: true, type: string }
+      gaugeTags: { required: true, type: string }
+      gaugeParams: { required: true, type: string }
+
+jobs:
+  run-test:
+    name: ${{ inputs.displayName }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Execute Gauge
+        run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}
+

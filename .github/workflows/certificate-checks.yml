@@ -1,0 +1,26 @@
+name: Certificate Checks
+on:
+  schedule:
+    - cron: "*/6 * * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        type: environment
+env:
+  gaugeParams: "--parallel -n=8"
+
+jobs:
+  execute-gauge:
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      matrix:
+        environment: [ "wc2-live", "wc2-approval", "wc2-tuidemo", "odp-live", "odp-approval","odp-tui-demo" ]
+    secrets: inherit
+    with:
+      displayName: 'Certificate Checks'
+      environment: ${{ inputs.environment || matrix.environment }}
+      gaugeParams: ${{ env.gaugeParams }}
+      gaugeSpecs: 'specs/platform-core/service/'
+      gaugeTags: 'certificate-check'
