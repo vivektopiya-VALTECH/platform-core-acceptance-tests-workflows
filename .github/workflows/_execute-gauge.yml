@@ -19,6 +19,8 @@ jobs:
         if: ${{ inputs.envVars != '' }}
         run: |
           # Parse comma-separated environment variables
+          echo Running on : 
+          echo $RUNNING_ON
            IFS=',' read -ra env_pairs <<< "${{ inputs.envVars }}"
            for pair in "${env_pairs[@]}"; do
              if [[ $pair == *"="* ]]; then
