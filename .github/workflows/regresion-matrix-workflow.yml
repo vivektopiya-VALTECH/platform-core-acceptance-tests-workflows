@@ -101,9 +101,13 @@ jobs:
           matrix = {"include": matrix_entries}
           matrix_json = json.dumps(matrix, separators=(',', ':'))
           
+          # Team matrix
+          teams_json = json.dumps(teams)
+          
           # Output to GitHub
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f"matrix={matrix_json}\n")
+              f.write(f"teams={teams_json}\n")
           
           # Print summary
           print(f"Generated matrix for {len(teams)} team(s): {', '.join(teams)}")
