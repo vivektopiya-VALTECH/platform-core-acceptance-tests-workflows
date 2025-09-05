@@ -13,6 +13,7 @@ on:
         required: false
         type: choice
         options:
+          - ''
           - TeamA
           - TeamB
 
