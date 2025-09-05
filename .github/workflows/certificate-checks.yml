@@ -6,20 +6,38 @@ on:
     inputs:
       environment:
         description: "Environment"
-        required: true
+        required: false
         type: environment
 
+env:
+  GAUGE_PARAMS: "--parallel -n=8"
+
 jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.set-envs.outputs.environments }}
+    steps:
+      - id: set-envs
+        run: |
+          if [ -n "${{ github.event.inputs.environment }}" ]; then
+            echo "environments=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
+          else
+            echo 'environments=["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]' >> $GITHUB_OUTPUT
+          fi
+
+
   execute-gauge:
+    name: ${{ inputs.environment || matrix.environment }}
     uses: ./.github/workflows/_execute-gauge.yml
     strategy:
       matrix:
-        environment: [ "wc2-live", "wc2-approval", "wc2-tuidemo", "odp-live", "odp-approval","odp-tui-demo" ]
+        environment: ${{ fromJSON(needs.set-matrix.outputs.environments) }}
     secrets: inherit
     with:
       displayName: "Certificate Checks"
       environment: ${{ inputs.environment || matrix.environment }}
-      gaugeParams: "--parallel -n=8"
+      gaugeParams: ${{ env.GAUGE_PARAMS }}
       gaugeSpecs: "specs/platform-core/service/"
       gaugeTags: "certificate-check"
 
