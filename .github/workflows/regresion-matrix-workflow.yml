@@ -102,7 +102,8 @@ jobs:
           matrix_json = json.dumps(matrix, separators=(',', ':'))
           
           # Team matrix
-          teams_json = json.dumps(teams)
+          teams_matrix = {"include": teams}
+          teams_json = json.dumps(teams_matrix)
           
           # Output to GitHub
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
@@ -114,6 +115,7 @@ jobs:
           print(f"Generated matrix for {len(environments)} environment(s): {', '.join(environments)}")
           print(f"Total matrix combinations: {len(matrix_entries)}")
           print(f"Generated matrix: {matrix_json}")
+          print(f"Generated Teams matrix: {teams_json}")
           
           EOF
 
