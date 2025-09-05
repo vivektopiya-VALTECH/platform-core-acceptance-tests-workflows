@@ -30,5 +30,7 @@ jobs:
            done
       - name: Execute Gauge
         run: |
+          export
+          echo $SUPER_SECRET
           echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
 
