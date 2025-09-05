@@ -1,5 +1,4 @@
-name: (Reusable) Setup Environments Matrix
-
+name: _setup-environment-matrix (Reusable)
 on:
   workflow_call:
     inputs:
