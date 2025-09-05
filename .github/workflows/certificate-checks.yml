@@ -19,10 +19,12 @@ jobs:
         run: |
           DEFAULT_ENVS='["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]'
           if [ -n "${{ inputs.environment }}" ]; then
-            echo "environments=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
+            environments=[\"${{ inputs.environment }}\"]"
           else
-            echo "environments=$DEFAULT_ENVS" >> $GITHUB_OUTPUT
+            environments=$DEFAULT_ENVS"
           fi
+          echo "Matrix will be: $environments"
+          echo "environments=$envs" >> $GITHUB_OUTPUT
 
 
   execute-gauge:
