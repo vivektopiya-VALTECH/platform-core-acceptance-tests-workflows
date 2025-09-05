@@ -1,7 +1,7 @@
 name: Certificate Checks
 on:
   schedule:
-    - cron: "*/6 * * * *"
+    - cron: "*/2 * * * *"
   workflow_dispatch:
     inputs:
       environment:
