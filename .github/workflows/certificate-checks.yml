@@ -1,7 +1,7 @@
 name: Certificate Checks
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/6 * * * *"
   workflow_dispatch:
     inputs:
       environment:
@@ -15,14 +15,6 @@ jobs:
     uses: ./.github/workflows/_setup-environments.yml
     with:
       environment: ${{ inputs.environment }}
-
-  debug:
-    name: Debug matrix
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - run: |
-          echo ${{ needs.setup.outputs.environments }}
 
   execute-gauge:
     name: ${{ matrix.environment }}
