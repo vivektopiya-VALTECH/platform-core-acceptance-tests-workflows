@@ -7,9 +7,15 @@ on:
       environment:
         description: "Environment"
         required: false
-        type: environment
+        type: choice
         options:
           - ''
+          - wc2-live
+          - wc2-approval
+          - wc2-tuidemo
+          - odp-live
+          - odp-approval
+          - odp-tui-demo
       team:
         description: "Team"
         required: false
