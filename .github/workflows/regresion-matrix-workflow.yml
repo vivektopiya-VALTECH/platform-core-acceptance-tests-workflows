@@ -1,0 +1,31 @@
+name: regression-matrix-workflow
+on:
+  schedule:
+    - cron: "*/6 * * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: false
+        type: environment
+      team:
+        description: "Team"
+        required: false
+        type: choice
+        options:
+          - TeamA
+          - TeamB
+
+jobs:
+  execute-gauge:
+    name: ${{ matrix.team }} - ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    strategy:
+      matrix:
+        team: [ "TeamA","TeamB" ]
+        environment: [ "wc2-live", "wc2-approval", "wc2-tuidemo", "odp-live", "odp-approval", "odp-tui-demo" ]
+    steps:
+      - name: Execute Gauge
+        run: |
+          echo "runTests -e ${{ matrix.environment }} -t regression,${{ matrix.team }} specs/platform-core"
