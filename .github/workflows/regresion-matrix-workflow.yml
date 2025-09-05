@@ -118,6 +118,22 @@ jobs:
           
           EOF
 
+  odp-tui-demo:
+    name: odp-tui-demo
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "odp-tui-demo"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
   odp-approval:
     name: odp-approval
     needs: setup-regression
@@ -134,6 +150,38 @@ jobs:
       gaugeSpecs: "specs/platform-core/service/"
       gaugeTags: ${{ matrix.gaugeTags }}
 
+  odp-live:
+    name: odp-live
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "odp-live"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
+  wc2-tuidemo:
+    name: wc2-tuidemo
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "wc2-tuidemo"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
   wc2-approval:
     name: wc2-approval
     needs: setup-regression
@@ -146,6 +194,22 @@ jobs:
     with:
       displayName: "${{ matrix.team }}"
       environment: "wc2-approval"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
+  wc2-live:
+    name: wc2-live
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ fromJson(needs.setup-regression.outputs.teams) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "wc2-live"
       gaugeParams: "--parallel -n=8"
       gaugeSpecs: "specs/platform-core/service/"
       gaugeTags: ${{ matrix.gaugeTags }}
