@@ -1,0 +1,32 @@
+name: Smoke Tests
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: false
+        type: environment
+
+jobs:
+  setup:
+    name: Setup Environments Matrix
+    uses: ./.github/workflows/_setup-environments.yml
+    with:
+      environment: ${{ inputs.environment }}
+
+  execute-gauge:
+    name: ${{ matrix.environment }}
+    needs: setup
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      matrix:
+        environment: ${{ fromJson(needs.setup.outputs.environments) }}
+    secrets: inherit
+    with:
+      displayName: "Smoke Tests"
+      environment: ${{ matrix.environment }}
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core"
+      gaugeTags: "smoke"
