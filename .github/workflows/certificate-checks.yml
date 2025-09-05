@@ -10,29 +10,12 @@ on:
         type: environment
 
 jobs:
-  set-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      environments: ${{ steps.set-envs.outputs.environments }}
-    steps:
-      - id: set-envs
-        run: |
-          DEFAULT_ENVS='["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]'
-          if [ -n "${{ inputs.environment }}" ]; then
-            environments=[\"${{ inputs.environment }}\"]"
-          else
-            environments=$DEFAULT_ENVS"
-          fi
-          echo "Matrix will be: $environments"
-          echo "environments=$envs" >> $GITHUB_OUTPUT
-
-
   execute-gauge:
     name: ${{ inputs.environment || matrix.environment }}
     uses: ./.github/workflows/_execute-gauge.yml
     strategy:
       matrix:
-        environment: ${{ fromJSON(needs.set-matrix.outputs.environments) }}
+        environment: ${{ inputs.environment || matrix.environment }}
     secrets: inherit
     with:
       displayName: "Certificate Checks"
