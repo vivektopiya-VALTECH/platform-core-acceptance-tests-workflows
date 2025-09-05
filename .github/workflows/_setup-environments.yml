@@ -27,8 +27,8 @@ jobs:
         id: set-environments
         run: |
           if [ -z "${{ inputs.environment }}" ]; then
-            echo "environments=${{ inputs.all_environments }}" >> $GITHUB_OUTPUT
-            echo "Running for all environments: ${{ inputs.all_environments }}"
+            echo "environments='${{ inputs.all_environments }}'" >> $GITHUB_OUTPUT
+            echo "Running for all environments: '${{ inputs.all_environments }}'"
           else
             # Specific environment provided
             echo "environments=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
