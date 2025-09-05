@@ -29,6 +29,7 @@ jobs:
 
   execute-gauge:
     name: ${{ matrix.environment }}
+    needs: setup
     uses: ./.github/workflows/_execute-gauge.yml
     strategy:
       matrix:
