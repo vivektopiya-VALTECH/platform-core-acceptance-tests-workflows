@@ -1,0 +1,130 @@
+name: Regression Tests
+on:
+  schedule:
+    - cron: "*/6 * * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: false
+        type: environment
+      team:
+        description: "Team"
+        required: false
+        type: choice
+        options:
+          - TeamA
+          - TeamB
+
+jobs:
+  setup-regression:
+    name: Setup Regression Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-regression-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install PyYAML
+
+      - name: Set regression test matrix
+        id: set-regression-matrix
+        run: |
+          python << 'EOF'
+          import yaml
+          import json
+          import os
+          
+          # Load configuration
+          with open('.github/config/regression.yml', 'r') as f:
+              config = yaml.safe_load(f)
+          
+          # Get inputs
+          input_environment = "${{ inputs.environment }}"
+          input_team = "${{ inputs.team }}"
+          
+          # Define all environments
+          all_environments = [
+              "wc2-live", "wc2-approval", "wc2-tuidemo", 
+              "odp-live", "odp-approval", "odp-tui-demo"
+          ]
+          
+          # Determine environments to use
+          if input_environment:
+              environments = [input_environment]
+          else:
+              environments = all_environments
+          
+          # Determine teams to use
+          if input_team:
+              teams = [input_team]
+          else:
+              teams = list(config.keys())
+          
+          # Generate matrix entries
+          matrix_entries = []
+          
+          for team in teams:
+              if team not in config:
+                  print(f"Warning: Team '{team}' not found in config")
+                  continue
+          
+              team_config = config[team]
+          
+              # Extract team configuration
+              display_name = team_config.get('displayName', team)
+              gauge_tags = team_config.get('gaugeTags', '')
+          
+              # Convert environment variables to string
+              env_vars = team_config.get('envVars', {})
+              env_vars_string = ','.join([f"{k}={v}" for k, v in env_vars.items()])
+          
+              # Create matrix entry for each environment
+              for environment in environments:
+                  matrix_entries.append({
+                      "team": team,
+                      "environment": environment,
+                      "displayName": display_name,
+                      "gaugeTags": gauge_tags,
+                      "envVars": env_vars_string
+                  })
+          
+          # Create final matrix
+          matrix = {"include": matrix_entries}
+          matrix_json = json.dumps(matrix, separators=(',', ':'))
+          
+          # Output to GitHub
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"matrix={matrix_json}\n")
+          
+          # Print summary
+          print(f"Generated matrix for {len(teams)} team(s): {', '.join(teams)}")
+          print(f"Generated matrix for {len(environments)} environment(s): {', '.join(environments)}")
+          print(f"Total matrix combinations: {len(matrix_entries)}")
+          
+          EOF
+
+  execute-gauge:
+    name: ${{ matrix.displayName }} - ${{ matrix.environment }}
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.setup.outputs.environments) }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.displayName }} - ${{ matrix.environment }}"
+      environment: ${{ matrix.environment }}
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+      envVars: ${{ matrix.envVars }}
+

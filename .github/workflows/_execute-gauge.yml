@@ -1,4 +1,4 @@
-name: Execute Gauge
+name: (Reusable) Execute Gauge
 on:
   workflow_call:
     inputs:
@@ -7,6 +7,7 @@ on:
       gaugeSpecs: { required: true, type: string }
       gaugeTags: { required: true, type: string }
       gaugeParams: { required: true, type: string }
+      envVars: { required: false, type: string, default: "" }
 
 jobs:
   run-test:
@@ -14,6 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Parse and Set Environment Variables
+        if: ${{ inputs.envVars != '' }}
+        run: |
+          # Parse comma-separated environment variables
+           IFS=',' read -ra env_pairs <<< "${{ inputs.envVars }}"
+           for pair in "${env_pairs[@]}"; do
+             if [[ $pair == *"="* ]]; then
+               key="${pair%%=*}"
+               value="${pair#*=}"
+               echo "${key}=${value}" >> $GITHUB_ENV
+               echo "Set environment variable: ${key}=${value}"
+             fi
+           done
       - name: Execute Gauge
         run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
 

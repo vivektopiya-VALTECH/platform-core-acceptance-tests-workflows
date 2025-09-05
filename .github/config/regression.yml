@@ -1,0 +1,13 @@
+TeamA:
+  displayName: "TeamA"
+  gaugeTags: regression,TeamA
+  envVars:
+    MONITORING_LEVEL: Regression
+    MONITORING_LABEL: "[Regression] TeamA Tests"
+
+TeamB:
+  displayName: "TeamB"
+  gaugeTags: regression,TeamB
+  envVars:
+    MONITORING_LEVEL: Regression
+    MONITORING_LABEL: "[Regression] TeamB Tests"
