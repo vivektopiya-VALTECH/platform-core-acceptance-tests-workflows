@@ -8,6 +8,8 @@ on:
         description: "Environment"
         required: false
         type: environment
+        options:
+          - ''
       team:
         description: "Team"
         required: false
