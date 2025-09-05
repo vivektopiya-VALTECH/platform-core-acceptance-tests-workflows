@@ -1,4 +1,4 @@
-name: (Reusable) Execute Gauge
+name: _execute-gauge (Reusable)
 on:
   workflow_call:
     inputs:
@@ -25,9 +25,11 @@ jobs:
                key="${pair%%=*}"
                value="${pair#*=}"
                echo "${key}=${value}" >> $GITHUB_ENV
-               echo "Set environment variable: ${key}=${value}"
+               echo "${key}=${value}"
              fi
            done
       - name: Execute Gauge
-        run: echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
+        run: |
+          export
+          echo "runTests ${{ inputs.gaugeParams}} -e ${{ inputs.environment }} -t ${{ inputs.gaugeTags }} ${{ inputs.gaugeSpecs }}"
 
