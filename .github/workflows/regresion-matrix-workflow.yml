@@ -1,7 +1,7 @@
-name: regression-matrix-workflow
+name: Regression Tests matrix
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/6 * * * *"
   workflow_dispatch:
     inputs:
       environment:
@@ -17,15 +17,114 @@ on:
           - TeamB
 
 jobs:
-  execute-gauge:
-    name: ${{ matrix.team }} - ${{ matrix.environment }}
+  setup-regression:
+    name: Setup Regression Matrix
     runs-on: ubuntu-latest
-    environment: ${{ matrix.environment }}
-    strategy:
-      matrix:
-        team: [ "TeamA","TeamB" ]
-        environment: [ "wc2-live", "wc2-approval", "wc2-tuidemo", "odp-live", "odp-approval", "odp-tui-demo" ]
+    outputs:
+      matrix: ${{ steps.set-regression-matrix.outputs.matrix }}
+      teams: ${{ steps.set-regression-matrix.outputs.teams }}
     steps:
-      - name: Execute Gauge
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install PyYAML
+        run: pip install PyYAML
+
+      - name: Set regression test matrix
+        id: set-regression-matrix
         run: |
-          echo "runTests -e ${{ matrix.environment }} -t regression,${{ matrix.team }} specs/platform-core"
+          python << 'EOF'
+          import yaml
+          import json
+          import os
+          
+          # Load configuration
+          with open('.github/config/regression.yml', 'r') as f:
+              config = yaml.safe_load(f)
+          
+          # Get inputs
+          input_environment = "${{ inputs.environment }}"
+          input_team = "${{ inputs.team }}"
+          
+          # Define all environments
+          all_environments = [
+              "wc2-live", "wc2-approval", "wc2-tuidemo", 
+              "odp-live", "odp-approval", "odp-tui-demo"
+          ]
+          
+          # Determine environments to use
+          if input_environment:
+              environments = [input_environment]
+          else:
+              environments = all_environments
+          
+          # Determine teams to use
+          if input_team:
+              teams = [input_team]
+          else:
+              teams = list(config.keys())
+          
+          # Generate matrix entries
+          matrix_entries = []
+          
+          for team in teams:
+              if team not in config:
+                  print(f"Warning: Team '{team}' not found in config")
+                  continue
+          
+              team_config = config[team]
+          
+              # Extract team configuration
+              display_name = team_config.get('displayName', team)
+              gauge_tags = team_config.get('gaugeTags', '')
+          
+              # Convert environment variables to string
+              env_vars = team_config.get('envVars', {})
+              env_vars_string = ','.join([f"{k}={v}" for k, v in env_vars.items()])
+          
+              # Create matrix entry for each environment
+              for environment in environments:
+                  matrix_entries.append({
+                      "team": team,
+                      "environment": environment,
+                      "displayName": display_name,
+                      "gaugeTags": gauge_tags,
+                      "envVars": env_vars_string
+                  })
+          
+          # Create final matrix
+          matrix = {"include": matrix_entries}
+          matrix_json = json.dumps(matrix, separators=(',', ':'))
+          
+          # Output to GitHub
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"matrix={matrix_json}\n")
+          
+          # Print summary
+          print(f"Generated matrix for {len(teams)} team(s): {', '.join(teams)}")
+          print(f"Generated matrix for {len(environments)} environment(s): {', '.join(environments)}")
+          print(f"Total matrix combinations: {len(matrix_entries)}")
+          print(f"Generated matrix: {matrix_json}")
+          
+          EOF
+
+  odp-approval:
+    needs: setup-regression
+    uses: ./.github/workflows/_execute-gauge.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        team: ${{ needs.setup-regression.outputs.teams }}
+    secrets: inherit
+    with:
+      displayName: "${{ matrix.team }}"
+      environment: "odp-approval"
+      gaugeParams: "--parallel -n=8"
+      gaugeSpecs: "specs/platform-core/service/"
+      gaugeTags: ${{ matrix.gaugeTags }}
+
