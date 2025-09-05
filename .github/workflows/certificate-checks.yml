@@ -19,7 +19,7 @@ jobs:
     with:
       displayName: "Certificate Checks"
       environment: ${{ inputs.environment || matrix.environment }}
-      gaugeParams: ""--parallel -n=8"
+      gaugeParams: "--parallel -n=8"
       gaugeSpecs: "specs/platform-core/service/"
       gaugeTags: "certificate-check"
 
