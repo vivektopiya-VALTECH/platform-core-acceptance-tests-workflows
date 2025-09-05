@@ -17,8 +17,8 @@ jobs:
     steps:
       - id: set-envs
         run: |
-          if [ -n "${{ github.event.inputs.environment }}" ]; then
-            echo "environments=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
+          if [ -n "${{ inputs.environment }}" ]; then
+            echo "environments=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
           else
             echo 'environments=["wc2-live","wc2-approval","wc2-tuidemo","odp-live","odp-approval","odp-tui-demo"]' >> $GITHUB_OUTPUT
           fi
