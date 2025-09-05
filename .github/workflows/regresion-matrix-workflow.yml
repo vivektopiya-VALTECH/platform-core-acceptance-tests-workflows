@@ -119,6 +119,7 @@ jobs:
           EOF
 
   odp-approval:
+    name: odp-approval
     needs: setup-regression
     uses: ./.github/workflows/_execute-gauge.yml
     strategy:
@@ -134,6 +135,7 @@ jobs:
       gaugeTags: ${{ matrix.gaugeTags }}
 
   wc2-approval:
+    name: wc2-approval
     needs: setup-regression
     uses: ./.github/workflows/_execute-gauge.yml
     strategy:
